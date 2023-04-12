@@ -3,33 +3,30 @@
 #include <cstdlib>
 #include <ctime>
 #include <Windows.h>
+#include <fstream>
 
 using namespace std;
 
 string generate_password(int length) {
-    
     string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-
     string password = "";
-    srand(time(0));  
-    for (int i = 0; i < length; i++) {
-        password += characters[rand() % characters.length()];
+    srand(time(NULL));
+    for (int i = 0; i <length; i++) {
+            password += characters[rand() % characters.length()];
     }
-
     return password;
 }
 
-int main() {
-    
-    int length;
-    cout << "Enter the desired password length: ";
-    cin >> length;
-    
-    string password = generate_password(length);
-    
-    cout << "Password generated: " << password << endl;
+int main(){
 
-    // copy to clipboard
+    int length;
+    cout << "Enter password length: ";
+    cin >> length;
+
+    string password = generate_password(length);
+
+    cout << "Password: " << password << endl;
+
     if (OpenClipboard(NULL)) {
         EmptyClipboard();
         HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, password.size() + 1);
@@ -48,6 +45,20 @@ int main() {
         CloseClipboard();
     } else {
         cout << "Failed to open clipboard." << endl;
+    }
+
+    string filename;
+    cout << "Enter output file name: ";
+    cin >> filename;
+    ofstream outputfile(filename);
+    if(outputfile.is_open()){
+        outputfile << "Password Length: " << length << endl;
+        outputfile << "Password: " << password << endl;
+        outputfile.close();
+        cout << "Password has been saved to: " << filename << endl;
+    }
+    else{
+        cout << "Failed to open file." << endl;
     }
 
     cin.ignore(); //clean the buffer
